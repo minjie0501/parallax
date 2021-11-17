@@ -1,0 +1,53 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-image: url('img/11_background.png');
+}
+
+.layer{
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+}
+
+#layer-1{
+    background-image: url('img/10_distant_clouds.png');
+    
+}
+
+#layer-2{
+    background-image: url('img/09_distant_clouds1.png');
+}
+
+#layer-3{
+    background-image: url('img/08_clouds.png');
+}
+
+#layer-4{
+    background-image: url('img/03_distant_trees.png');
+    background-position-y: -350px;
+}
+
+#layer-5{
+    background-image: url('img/02_trees\ and\ bushes.png');
+    background-position-y: -400px;
+}
+
+#layer-6{
+    background-image: url('img/01_ground.png');
+    background-position-y: -400px;
+}
+
+#player{
+    background-image: url('img/idle.gif');
+    background-size: 18rem;
+    background-position-x: 40px;
+    position: absolute;
+    width: 210px;
+    height: 250px;
+    bottom: 50px;
+    left: calc(50% - 75px);
+}
