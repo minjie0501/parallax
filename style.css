@@ -5,6 +5,7 @@
 
 body{
     background-image: url('img/11_background.png');
+    overflow: hidden;
 }
 
 .layer{
@@ -50,4 +51,32 @@ body{
     height: 250px;
     bottom: 50px;
     left: calc(50% - 75px);
+}
+
+#player-hitbox{
+    border-style: solid;
+    border-color: coral;
+    border-width: 1px;
+    background-size: 18rem;
+    background-position-x: 40px;
+    position: absolute;
+    width: 60px;
+    height: 150px;
+    bottom: 60px;
+    left: calc(50% - 5px);
+}
+
+.obstacle{
+    /* background-color: black; */
+    border-style: solid;
+    border-color: coral;
+    border-width: 1px;
+    background-image: url('img/rock1.png');
+    background-size: 80px;
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    bottom: 50px;
+    left: 1260px;
+    border-radius: 50%;
 }
