@@ -9,7 +9,6 @@ const keys = [];
 const tic = 10;
 const change = 10;
 let playerJump = false;
-let playerDescend = false;
 
 const removeKey = (e, arr, arrow) => {
   if (e.key === arrow) {
@@ -37,7 +36,6 @@ const checkJump = () => {
   }
   if (playerBottom > 200) {
     playerJump = false;
-    playerDescend = true;
   }
 };
 
@@ -45,11 +43,18 @@ const jump = () => {
   if (playerJump) {
     playerBottom += 5;
     player.style.bottom = playerBottom + "px";
-  }else if(playerDescend && playerBottom > 50){
+  }else if(playerBottom > 50){
     playerBottom -= 5;
     player.style.bottom = playerBottom + "px";
   }
 };
+
+const jumpAnimation = () => {
+    if(playerBottom > 50 && playerBottom < 200){
+        player.style.backgroundImage = "url('img/jump.gif')";
+
+    }
+}
 
 document.body.addEventListener("keydown", (e) => {
   console.log(e.key);
@@ -114,6 +119,7 @@ const main = () => {
   moveLayer();
   checkJump();
   jump();
+  jumpAnimation() // NOTE: tjhis is shit
   setTimeout(main, tic);
 };
 
