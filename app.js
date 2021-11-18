@@ -1,6 +1,8 @@
 const layers = document.getElementsByClassName("layer");
 const player = document.getElementById("player");
 const playerHitbox = document.getElementById("player-hitbox");
+const scoreDisplay = document.getElementById("score");
+const newGameBtn = document.getElementById("new-game");
 // const obstacle = document.getElementById("obstacle");
 
 let playerBottom = parseInt(getComputedStyle(player).getPropertyValue("bottom").split("px")[0]);
@@ -19,10 +21,13 @@ const obstacleChange = 5;
 const playerHeight = 250;
 obstacleWidth = 80;
 let score = 0;
+let addScoreCheck = true;
 let playerJump = false;
 let obstacle;
 let obstaclePos;
 let obstacleHitboxCss;
+let rotateDeg = -10;
+let dead = false;
 
 function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -37,24 +42,26 @@ const createObstacle = () => {
     obstacle = document.getElementById("obstacle");
     obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
     obstacleHitboxCss = getComputedStyle(obstacle);
+    addScoreCheck = true;
   }
 };
 
 const removeObstacle = () => {
   if (obstacle.offsetLeft + obstacleWidth < 0) {
     document.getElementById("obstacle").remove();
+      rotateDeg = -10;
   }
 };
 
 const handleScore = (elm1, elm2) => {
   let elm1Rect = elm1.getBoundingClientRect();
   let elm2Rect = elm2.getBoundingClientRect();
-  if(elm1Rect.right>elm2Rect.right+playerHitboxWidth){
-    console.log('plus score')
+  if (elm1Rect.right > elm2Rect.right + playerHitboxWidth && addScoreCheck) {
+    score++;
+    console.log(score);
+    scoreDisplay.innerHTML = `Score: ${score}`;
+    addScoreCheck = false;
   }
-
-  console.log("player", elm1Rect.right)
-  console.log("obstacle", elm2Rect.right)
 };
 
 const removeKey = (e, arr, arrow) => {
@@ -66,16 +73,22 @@ const removeKey = (e, arr, arrow) => {
   }
 };
 
+const rotateRock = () => {
+  obstacle.style.transform = `rotate(${rotateDeg}deg)`;
+  rotateDeg-=10;
+
+}
+
 const checkCollision = (elm1, elm2) => {
   let elm1Rect = elm1.getBoundingClientRect();
   let elm2Rect = elm2.getBoundingClientRect();
 
-  return (
+  if (
     elm1Rect.right >= elm2Rect.left &&
     elm1Rect.left <= elm2Rect.right &&
     elm1Rect.bottom >= elm2Rect.top &&
     elm1Rect.top <= elm2Rect.bottom
-  );
+  ) {dead= true}
 };
 
 const changeRun = () => {
@@ -117,6 +130,12 @@ const jumpAnimation = () => {
     player.style.backgroundImage = "url('img/jump.gif')";
   }
 };
+
+const newGame = () => {
+  if(dead){
+    newGameBtn.style.display = "block"
+  }
+}
 
 /*
 const clash = () => {
@@ -198,21 +217,28 @@ const moveLayer = () => {
 };
 
 const main = () => {
+  createObstacle();
+  checkCollision(playerHitbox, obstacle)
+  if(!dead){
+    changeRun();
+    moveLayer();
+    checkJump();
+    jump();
+    removeObstacle();
+    handleScore(playerHitbox, obstacle);
+    createObstacle();
+    // checkCollision(playerHitbox, obstacle);
+    jumpAnimation(); // NOTE: this is kinda shit but its alright
+    setTimeout(rotateRock, tic*100);
+    setTimeout(main, tic);
+  }else{
+    newGame();
+  }
+  console.log(checkCollision(playerHitbox, obstacle))
   // console.log(keys);
   // console.log("obstacle left: "  + getComputedStyle(obstacle).getPropertyValue("left"))
   // console.log("player right: "  + getComputedStyle(playerHitbox).getPropertyValue("right"))
-  createObstacle();
-  changeRun();
-  moveLayer();
-  checkJump();
-  jump();
-  removeObstacle();
-  handleScore(playerHitbox, obstacle);
-  // clash();
-  createObstacle();
-  console.log(checkCollision(playerHitbox, obstacle));
-  jumpAnimation(); // NOTE: this is kinda shit but its alright
-  setTimeout(main, tic);
+
 };
 
 main();
