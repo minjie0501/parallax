@@ -6,7 +6,7 @@
 body {
   background-image: url("img/11_background.png");
   overflow: hidden;
-  font-family: 'Griffy', cursive;
+  font-family: "Griffy", cursive;
   letter-spacing: 5px;
 }
 
@@ -47,9 +47,7 @@ body {
   background-image: url("img/idle.gif");
   background-size: 18rem;
   background-position-x: 40px;
-  /* border-style: solid;
-  border-color: coral;
-  border-width: 3px; */
+  /* border: 3px solid coral; */
   position: absolute;
   width: 210px;
   height: 250px;
@@ -58,28 +56,24 @@ body {
 }
 
 #player-hitbox {
-  border-style: solid;
-  border-color: coral;
-  border-width: 1px;
+  /* border: 1px solid coral; */
   background-size: 18rem;
   background-position-x: 40px;
   position: absolute;
-  width: 60px;
+  width: 55px;
   height: 150px;
-  bottom: 60px;
+  bottom: 65px;
   left: calc(50% - 2px);
+  z-index: 3;
 }
 
 .obstacle {
-  /* background-color: black; */
-  border-style: solid;
-  border-color: coral;
-  border-width: 1px;
+  /* border: 1px solid coral; */
   background-image: url("img/rock1.png");
-  background-size: 80px;
+  background-size: 50px;
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   bottom: 50px;
   left: 1760px;
 
@@ -91,23 +85,21 @@ body {
   width: 200px;
   height: 100px;
   line-height: 100px;
-  border-style: solid;
-  border-color: coral;
-  border-width: 3px;
+  border: 3px solid coral;
   text-align: center;
   font-size: 2.5rem;
   font-weight: bold;
+  margin: 20px;
+  border-radius: 8px;
 }
 
 #new-game {
-  border-style: solid;
-  border-color: coral;
-  border-width: 1px;
+  /* border: 1px solid coral; */
   position: absolute;
   width: 400px;
   height: 100px;
   bottom: 70%;
-  left:  calc(50% - 200px);
+  left: calc(50% - 200px);
   display: none;
   text-align: center;
 }
@@ -117,6 +109,17 @@ body {
   height: 50px;
 }
 
-#img3{
-    display: none;
+#img3 {
+  opacity: 0;
+}
+
+#btn-new-game {
+  border-radius: 8px;
+  border: 2px solid coral;
+  background-color: rgb(245, 192, 173);
+  cursor: pointer;
+}
+
+#btn-new-game:hover {
+  background: rgb(241, 209, 198);
 }

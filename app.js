@@ -6,8 +6,6 @@ const newGameDiv = document.getElementById("new-game");
 const newGameBtn = document.getElementById("btn-new-game");
 // const obstacle = document.getElementById("obstacle");
 
-
-
 let playerBottom = parseInt(getComputedStyle(player).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxBottom = parseInt(getComputedStyle(playerHitbox).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxWidth = parseInt(getComputedStyle(playerHitbox).getPropertyValue("width").split("px")[0]);
@@ -16,23 +14,22 @@ let playerHitboxWidth = parseInt(getComputedStyle(playerHitbox).getPropertyValue
 const playerHitboxCss = getComputedStyle(playerHitbox);
 // const obstacleHitboxCss = getComputedStyle(obstacle);
 ////Default values
-const layerOneStartingPos = layers[0].style.backgroundPositionX
-const layerTwoStartingPos = layers[1].style.backgroundPositionX
-const layerThreeStartingPos = layers[2].style.backgroundPositionX
-const layerFourStartingPos =layers[3].style.backgroundPositionX
-const layerFiveStartingPos =layers[4].style.backgroundPositionX
-const layerSixStartingPos =layers[5].style.backgroundPositionX
+const layerOneStartingPos = layers[0].style.backgroundPositionX;
+const layerTwoStartingPos = layers[1].style.backgroundPositionX;
+const layerThreeStartingPos = layers[2].style.backgroundPositionX;
+const layerFourStartingPos = layers[3].style.backgroundPositionX;
+const layerFiveStartingPos = layers[4].style.backgroundPositionX;
+const layerSixStartingPos = layers[5].style.backgroundPositionX;
 let obstacleStartingPos;
 
-///
 
 let layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
 const keys = [];
 const tic = 10;
-const change = 10;
-const obstacleChange = 5;
+const change = 20;
+const obstacleChange = 10;
 const playerHeight = 250;
-obstacleWidth = 80;
+let obstacleWidth;
 let score = 0;
 let addScoreCheck = true;
 let playerJump = false;
@@ -41,6 +38,7 @@ let obstaclePos;
 let obstacleHitboxCss;
 let rotateDeg = -10;
 let dead = false;
+const possibleObstacleSizes = [50, 60, 70, 80,  90];
 
 function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -51,27 +49,31 @@ function resetGif(id) {
   var imageUrl = img.src;
   img.src = "";
   img.src = imageUrl;
-};
-
+}
 
 const createObstacle = () => {
   if (document.getElementById("obstacle") == null) {
+    let obstacleSize = possibleObstacleSizes[Math.floor(Math.random() * 4) + 1];
     const newDiv = document.createElement("div");
     newDiv.setAttribute("id", "obstacle");
     newDiv.classList.add("obstacle");
     insertAfter(playerHitbox, newDiv);
     obstacle = document.getElementById("obstacle");
+    obstacle.style.width = `${obstacleSize}px`;
+    obstacle.style.height = `${obstacleSize}px`;
+    obstacle.style.backgroundSize = `${obstacleSize}px`;
     obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
     obstacleHitboxCss = getComputedStyle(obstacle);
     addScoreCheck = true;
     obstacleStartingPos = obstacle.style.left;
+    obstacleWidth = parseInt(getComputedStyle(obstacle).getPropertyValue("width").split("px")[0]);
   }
 };
 
 const removeObstacle = () => {
   if (obstacle.offsetLeft + obstacleWidth < 0 || dead) {
     document.getElementById("obstacle").remove();
-      rotateDeg = -10;
+    rotateDeg = -10;
   }
 };
 
@@ -97,9 +99,8 @@ const removeKey = (e, arr, arrow) => {
 
 const rotateRock = () => {
   obstacle.style.transform = `rotate(${rotateDeg}deg)`;
-  rotateDeg-=10;
-
-}
+  rotateDeg -= 10;
+};
 
 const checkCollision = (elm1, elm2) => {
   let elm1Rect = elm1.getBoundingClientRect();
@@ -110,7 +111,9 @@ const checkCollision = (elm1, elm2) => {
     elm1Rect.left <= elm2Rect.right &&
     elm1Rect.bottom >= elm2Rect.top &&
     elm1Rect.top <= elm2Rect.bottom
-  ) {dead= true}
+  ) {
+    dead = true;
+  }
 };
 
 const changeRun = () => {
@@ -135,13 +138,13 @@ const checkJump = () => {
 
 const jump = () => {
   if (playerJump) {
-    playerBottom += 5;
-    playerHitboxBottom += 5;
+    playerBottom += 10;
+    playerHitboxBottom += 10;
     player.style.bottom = playerBottom + "px";
     playerHitbox.style.bottom = playerHitboxBottom + "px";
   } else if (playerBottom > 50) {
-    playerBottom -= 5;
-    playerHitboxBottom -= 5;
+    playerBottom -= 10;
+    playerHitboxBottom -= 10;
     player.style.bottom = playerBottom + "px";
     playerHitbox.style.bottom = playerHitboxBottom + "px";
   }
@@ -154,11 +157,10 @@ const jumpAnimation = () => {
 };
 
 const newGame = () => {
-  if(dead){
-
-    newGameDiv.style.display = "block"
+  if (dead) {
+    newGameDiv.style.display = "block";
   }
-}
+};
 
 /*
 const clash = () => {
@@ -168,12 +170,12 @@ const clash = () => {
   let obstacleBottom = parseInt(obstacleHitboxCss.getPropertyValue("bottom").split("px")[0]);
   let playerHitboxBottom= parseInt(playerHitboxCss.getPropertyValue("bottom").split("px")[0]);
   let obstacleHeight = parseInt(obstacleHitboxCss.getPropertyValue("height").split("px")[0]);
-  let obstacleWidth = parseInt(obstacleHitboxCss.getPropertyValue("width").split("px")[0]);
+  let let obstacleWidth = parseInt(obstacleHitboxCss.getPropertyValue("width").split("px")[0]);
   // NOTE: this works but copied a nicer solution
 
   if (obstacleLeft - playerHitboxLeft <= playerHitboxWidth
      && (playerHitboxBottom<(obstacleBottom+obstacleHeight))
-      && !(playerHitboxLeft-obstacleLeft > obstacleWidth)) {
+      && !(playerHitboxLeft-obstacleLeft > let obstacleWidth)) {
     console.log("you ded");
   }
 };*/
@@ -191,8 +193,6 @@ document.body.addEventListener("keydown", (e) => {
   // console.log(keys);
 });
 
-
-
 document.body.addEventListener("keyup", (e) => {
   removeKey(e, keys, "ArrowLeft");
   removeKey(e, keys, "ArrowRight");
@@ -202,29 +202,28 @@ document.body.addEventListener("keyup", (e) => {
   removeKey(e, keys, "s");
   removeKey(e, keys, "h");
   removeKey(e, keys, " ");
-
 });
 
-newGameBtn.addEventListener('click', () => { //might just refresh the page
+newGameBtn.addEventListener("click", () => {
+  //might just refresh the page
   removeObstacle();
-  dead=false;
+  dead = false;
   score = 0;
   scoreDisplay.innerHTML = `Score: ${score}`;
-  layers[0].style.backgroundPositionX = layerOneStartingPos
-  layers[1].style.backgroundPositionX = layerTwoStartingPos
-  layers[2].style.backgroundPositionX = layerThreeStartingPos
-  layers[3].style.backgroundPositionX = layerFourStartingPos
-  layers[4].style.backgroundPositionX = layerFiveStartingPos
-  layers[5].style.backgroundPositionX = layerSixStartingPos
+  layers[0].style.backgroundPositionX = layerOneStartingPos;
+  layers[1].style.backgroundPositionX = layerTwoStartingPos;
+  layers[2].style.backgroundPositionX = layerThreeStartingPos;
+  layers[3].style.backgroundPositionX = layerFourStartingPos;
+  layers[4].style.backgroundPositionX = layerFiveStartingPos;
+  layers[5].style.backgroundPositionX = layerSixStartingPos;
   obstacle.style.left = obstacleStartingPos;
-  layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
+  layer1X = layer2X = layer3X = layer4X = layer5X = layer6X = 0;
   obstaclePos = 0;
-  newGameDiv.style.display = "none"
-  player.style.width = "210px"
-  player.style.backgroundPositionX = "40px"
-  reset = true
-
-})
+  newGameDiv.style.display = "none";
+  player.style.width = "210px";
+  player.style.backgroundPositionX = "40px";
+  reset = true;
+});
 
 const moveLayer = () => {
   if (keys.includes("ArrowLeft")) {
@@ -259,29 +258,30 @@ const moveLayer = () => {
     layers[3].style.backgroundPositionX = layer4X + "px";
     layers[4].style.backgroundPositionX = layer5X + "px";
     layers[5].style.backgroundPositionX = layer6X + "px";
+    console.log(layer6X)
     obstacle.style.left = obstaclePos + "px";
   }
 };
 
-
 // this is just for resetting the dying gif, pretty bad but idk how to do it better
 let reset = true;
 const checkIfDeadGif = () => {
-  if(dead && reset){
-    resetGif("img3")
-    reset= false
+  if (dead && reset) {
+    resetGif("img3");
+    reset = false;
   }
   setTimeout(checkIfDeadGif, 10);
-}
+};
 checkIfDeadGif();
 
 
+
+// NOTE: gotta change rock hitbox
 const main = () => {
   createObstacle();
-  checkCollision(playerHitbox, obstacle)
-
-
-  if(!dead){
+  checkCollision(playerHitbox, obstacle);
+  console.log('asd')
+  if (!dead) {
     changeRun();
     moveLayer();
     checkJump();
@@ -290,11 +290,11 @@ const main = () => {
     handleScore(playerHitbox, obstacle);
     createObstacle();
     jumpAnimation(); // NOTE: this is kinda shit but its alright
-    setTimeout(rotateRock, tic*100);
+    setTimeout(rotateRock, tic);
     setTimeout(main, tic);
-  }else{
-    player.style.width = "300px"
-    player.style.backgroundPositionX = "5px"
+  } else {
+    player.style.width = "300px";
+    player.style.backgroundPositionX = "5px";
     player.style.zIndex = "2";
     player.style.backgroundImage = "url('img/dead.gif')";
     newGame();
@@ -303,7 +303,6 @@ const main = () => {
   // console.log(keys);
   // console.log("obstacle left: "  + getComputedStyle(obstacle).getPropertyValue("left"))
   // console.log("player right: "  + getComputedStyle(playerHitbox).getPropertyValue("right"))
-
 };
 
 main();
