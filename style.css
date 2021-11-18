@@ -6,6 +6,8 @@
 body {
   background-image: url("img/11_background.png");
   overflow: hidden;
+  font-family: 'Griffy', cursive;
+  letter-spacing: 5px;
 }
 
 .layer {
@@ -45,6 +47,9 @@ body {
   background-image: url("img/idle.gif");
   background-size: 18rem;
   background-position-x: 40px;
+  /* border-style: solid;
+  border-color: coral;
+  border-width: 3px; */
   position: absolute;
   width: 210px;
   height: 250px;
@@ -99,14 +104,19 @@ body {
   border-color: coral;
   border-width: 1px;
   position: absolute;
-  width: 100px;
-  height: 50px;
+  width: 400px;
+  height: 100px;
   bottom: 70%;
-  left:  calc(50% - 50px);
+  left:  calc(50% - 200px);
   display: none;
+  text-align: center;
 }
 
 #new-game > button {
   width: 100px;
   height: 50px;
+}
+
+#img3{
+    display: none;
 }

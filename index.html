@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +8,11 @@
     <title>Parallax</title>
     <link rel="stylesheet" href="normalize.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Griffy&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="layer" id="layer-1"></div>
     <div class="layer" id="layer-2"></div>
@@ -19,10 +24,14 @@
     <div id="player"></div>
     <div id="player-hitbox"></div>
     <div id="new-game">
-        <button>New Game</button>
+        <h2>You are dead! Better luck next time!</h2>
+        <button id="btn-new-game">New Game</button>
     </div>
-        <!-- <div class="obstacle" id='obstacle'></div> -->
-    
-<script src="app.js"></script>
+    <div id="top"></div>
+    <img id="img3" src="img/dead.gif"> <!--this is only to reset gif LOL -->
+    <!-- <div class="obstacle" id='obstacle'></div> -->
+
+    <script src="app.js"></script>
 </body>
+
 </html>
