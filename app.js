@@ -1,22 +1,61 @@
 const layers = document.getElementsByClassName("layer");
 const player = document.getElementById("player");
 const playerHitbox = document.getElementById("player-hitbox");
-const obstacle = document.getElementById("obstacle");
+// const obstacle = document.getElementById("obstacle");
 
 let playerBottom = parseInt(getComputedStyle(player).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxBottom = parseInt(getComputedStyle(playerHitbox).getPropertyValue("bottom").split("px")[0]);
-let obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
+let playerHitboxWidth = parseInt(getComputedStyle(playerHitbox).getPropertyValue("width").split("px")[0]);
+// let obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
 
 const playerHitboxCss = getComputedStyle(playerHitbox);
-const obstacleHitboxCss = getComputedStyle(obstacle);
+// const obstacleHitboxCss = getComputedStyle(obstacle);
 
 let layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
 const keys = [];
-const tic = 100;
+const tic = 10;
 const change = 10;
 const obstacleChange = 5;
 const playerHeight = 250;
+obstacleWidth = 80;
+let score = 0;
 let playerJump = false;
+let obstacle;
+let obstaclePos;
+let obstacleHitboxCss;
+
+function insertAfter(referenceNode, newNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+const createObstacle = () => {
+  if (document.getElementById("obstacle") == null) {
+    const newDiv = document.createElement("div");
+    newDiv.setAttribute("id", "obstacle");
+    newDiv.classList.add("obstacle");
+    insertAfter(playerHitbox, newDiv);
+    obstacle = document.getElementById("obstacle");
+    obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
+    obstacleHitboxCss = getComputedStyle(obstacle);
+  }
+};
+
+const removeObstacle = () => {
+  if (obstacle.offsetLeft + obstacleWidth < 0) {
+    document.getElementById("obstacle").remove();
+  }
+};
+
+const handleScore = (elm1, elm2) => {
+  let elm1Rect = elm1.getBoundingClientRect();
+  let elm2Rect = elm2.getBoundingClientRect();
+  if(elm1Rect.right>elm2Rect.right+playerHitboxWidth){
+    console.log('plus score')
+  }
+
+  console.log("player", elm1Rect.right)
+  console.log("obstacle", elm2Rect.right)
+};
 
 const removeKey = (e, arr, arrow) => {
   if (e.key === arrow) {
@@ -25,6 +64,18 @@ const removeKey = (e, arr, arrow) => {
       arr.splice(index, 1);
     }
   }
+};
+
+const checkCollision = (elm1, elm2) => {
+  let elm1Rect = elm1.getBoundingClientRect();
+  let elm2Rect = elm2.getBoundingClientRect();
+
+  return (
+    elm1Rect.right >= elm2Rect.left &&
+    elm1Rect.left <= elm2Rect.right &&
+    elm1Rect.bottom >= elm2Rect.top &&
+    elm1Rect.top <= elm2Rect.bottom
+  );
 };
 
 const changeRun = () => {
@@ -67,6 +118,7 @@ const jumpAnimation = () => {
   }
 };
 
+/*
 const clash = () => {
   let obstacleLeft = parseInt(obstacleHitboxCss.getPropertyValue("left").split("px")[0]);
   let playerHitboxLeft = parseInt(playerHitboxCss.getPropertyValue("left").split("px")[0]);
@@ -74,19 +126,15 @@ const clash = () => {
   let obstacleBottom = parseInt(obstacleHitboxCss.getPropertyValue("bottom").split("px")[0]);
   let playerHitboxBottom= parseInt(playerHitboxCss.getPropertyValue("bottom").split("px")[0]);
   let obstacleHeight = parseInt(obstacleHitboxCss.getPropertyValue("height").split("px")[0]);
-  console.log(obstacleLeft - playerHitboxLeft)
-  console.log(playerHitboxLeft-obstacleLeft)
-
-
-  // check if player right and left clash, checck height done also NOTE: done but have to check if player left is after obstacle right DONE:
-  // NOTE: hitting rock from left doesnt really work, i changed with to 60px and calc(50% - 5px)
+  let obstacleWidth = parseInt(obstacleHitboxCss.getPropertyValue("width").split("px")[0]);
+  // NOTE: this works but copied a nicer solution
 
   if (obstacleLeft - playerHitboxLeft <= playerHitboxWidth
      && (playerHitboxBottom<(obstacleBottom+obstacleHeight))
-      && !(playerHitboxLeft-obstacleLeft > playerHitboxWidth)) {
+      && !(playerHitboxLeft-obstacleLeft > obstacleWidth)) {
     console.log("you ded");
   }
-};
+};*/
 
 document.body.addEventListener("keydown", (e) => {
   // console.log(e.key);
@@ -153,11 +201,16 @@ const main = () => {
   // console.log(keys);
   // console.log("obstacle left: "  + getComputedStyle(obstacle).getPropertyValue("left"))
   // console.log("player right: "  + getComputedStyle(playerHitbox).getPropertyValue("right"))
+  createObstacle();
   changeRun();
   moveLayer();
   checkJump();
   jump();
-  clash();
+  removeObstacle();
+  handleScore(playerHitbox, obstacle);
+  // clash();
+  createObstacle();
+  console.log(checkCollision(playerHitbox, obstacle));
   jumpAnimation(); // NOTE: this is kinda shit but its alright
   setTimeout(main, tic);
 };
