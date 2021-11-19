@@ -12,33 +12,26 @@ let playerBottom = parseInt(getComputedStyle(player).getPropertyValue("bottom").
 let playerHitboxBottom = parseInt(getComputedStyle(playerHitbox).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxWidth = parseInt(getComputedStyle(playerHitbox).getPropertyValue("width").split("px")[0]);
 const playerHitboxCss = getComputedStyle(playerHitbox);
-////Default values
-const layerOneStartingPos = layers[0].style.backgroundPositionX;
-const layerTwoStartingPos = layers[1].style.backgroundPositionX;
-const layerThreeStartingPos = layers[2].style.backgroundPositionX;
-const layerFourStartingPos = layers[3].style.backgroundPositionX;
-const layerFiveStartingPos = parseInt(getComputedStyle(layers[4]).getPropertyValue("background-position-x").split("px")[0])
-const layerSixStartingPos = layers[5].style.backgroundPositionX;
-console.log(layerFiveStartingPos)
-let obstacleStartingPos;
 
-let layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
+let layer1X = { val: 0 },
+  layer2X = { val: 0 },
+  layer3X = { val: 0 },
+  layer4X = { val: 0 },
+  layer5X = { val: 0 },
+  layer6X = { val: 0 };
+const changeMultiplier = [0.01, 0.05, 0.1, 0.25, 0.5, 1];
+const layersChangeArr = [layer1X, layer2X, layer3X, layer4X, layer5X, layer6X];
 const keys = [];
 const tic = 10;
 const change = 20;
 let obstacleChange = 10;
 const obstacleSpeedChange = 5;
 const playerHeight = 250;
-let obstacleWidth;
-let score = 0;
+let score = (speedLvl = prevSpeedLvl = 0);
 let lvl = 1;
-let speedLvl = 0;
-let prevSpeedLvl = 0;
 let addScoreCheck = true;
 let playerJump = false;
-let obstacle;
-let obstaclePos;
-let obstacleHitboxCss;
+let obstacle, obstaclePos, obstacleHitboxCss, obstacleStartingPos, obstacleWidth;
 let rotateDeg = -10;
 let dead = false;
 const possibleObstacleSizes = [50, 60, 70, 80, 90, 100];
@@ -105,14 +98,13 @@ function timer() {
 
 function displayCount(count) {
   let res = count / 1000;
-  if (parseFloat(res.toPrecision(count.toString().length)) < 0) {
+  if (parseFloat(res.toFixed(2)) <= 0) {
     dead = true;
   }
   document.getElementById("countdown").innerHTML = res.toFixed(2);
 }
 
 displayCount(initial);
-
 /////
 
 const handleScore = (elm1, elm2) => {
@@ -236,50 +228,19 @@ const newGame = () => {
   }
 };
 
-/*
-const clash = () => {
-  let obstacleLeft = parseInt(obstacleHitboxCss.getPropertyValue("left").split("px")[0]);
-  let playerHitboxLeft = parseInt(playerHitboxCss.getPropertyValue("left").split("px")[0]);
-  let playerHitboxWidth = parseInt(playerHitboxCss.getPropertyValue("width").split("px")[0]);
-  let obstacleBottom = parseInt(obstacleHitboxCss.getPropertyValue("bottom").split("px")[0]);
-  let playerHitboxBottom= parseInt(playerHitboxCss.getPropertyValue("bottom").split("px")[0]);
-  let obstacleHeight = parseInt(obstacleHitboxCss.getPropertyValue("height").split("px")[0]);
-  let let obstacleWidth = parseInt(obstacleHitboxCss.getPropertyValue("width").split("px")[0]);
-  // NOTE: this works but copied a nicer solution
-
-  if (obstacleLeft - playerHitboxLeft <= playerHitboxWidth
-     && (playerHitboxBottom<(obstacleBottom+obstacleHeight))
-      && !(playerHitboxLeft-obstacleLeft > let obstacleWidth)) {
-    console.log("you ded");
-  }
-};*/
-
 document.body.addEventListener("keydown", (e) => {
-  // console.log(e.key);
   if (e.key === "ArrowLeft" && !keys.includes("ArrowLeft")) keys.push(e.key);
   if (e.key === "ArrowRight" && !keys.includes("ArrowRight")) keys.push(e.key);
-  if (e.key === "ArrowUp" && !keys.includes("ArrowUp")) keys.push(e.key);
-  if (e.key === "ArrowDown" && !keys.includes("ArrowDown")) keys.push(e.key);
-  if (e.key === "d" && !keys.includes("d")) keys.push(e.key);
-  if (e.key === "s" && !keys.includes("s")) keys.push(e.key);
-  if (e.key === "h" && !keys.includes("h")) keys.push(e.key);
   if (e.key === " " && !keys.includes(" ")) keys.push(e.key);
-  // console.log(keys);
 });
 
 document.body.addEventListener("keyup", (e) => {
   removeKey(e, keys, "ArrowLeft");
   removeKey(e, keys, "ArrowRight");
-  removeKey(e, keys, "ArrowUp");
-  removeKey(e, keys, "ArrowDown");
-  removeKey(e, keys, "d");
-  removeKey(e, keys, "s");
-  removeKey(e, keys, "h");
   removeKey(e, keys, " ");
 });
 
 newGameBtn.addEventListener("click", () => {
-  //might just refresh the page
   removeObstacle();
   dead = false;
   score = 0;
@@ -289,15 +250,18 @@ newGameBtn.addEventListener("click", () => {
   obstacleChange = 10;
   initial = 5000;
   count = initial;
+
+  for (let i = 0; i < changeMultiplier.length; i++) {
+    layersChangeArr[i].val = 0; // reset layer changer values to 0
+  }
+
   scoreDisplay.innerHTML = `Score: ${score}`;
   levelDisplay.innerHTML = `Level: ${lvl}`;
   player.style.transform = "scaleX(1)";
-  layers[0].style.backgroundPositionX = layerOneStartingPos;
-  layers[1].style.backgroundPositionX = layerTwoStartingPos;
-  layers[2].style.backgroundPositionX = layerThreeStartingPos;
-  layers[3].style.backgroundPositionX = layerFourStartingPos;
-  layers[4].style.backgroundPositionX = layerFiveStartingPos;
-  layers[5].style.backgroundPositionX = layerSixStartingPos;
+  for (let j = 0; j < layers.length; j++) {
+    layers[j].style.backgroundPositionX = "0px";
+  }
+
   obstacle.style.left = obstacleStartingPos;
   layer1X = layer2X = layer3X = layer4X = layer5X = layer6X = 0;
   obstaclePos = 0;
@@ -307,61 +271,32 @@ newGameBtn.addEventListener("click", () => {
   reset = true;
 });
 
-const changeMultiplier = [0.01, 0.05, 0.1, 0.25, 0.5, 1];
-const layersChangeArr = [layer1X, layer2X, layer3X, layer4X, layer5X, layer6X];
-
 const moveLayer = () => {
   if (keys.includes("ArrowLeft")) {
     player.style.transform = "scaleX(-1)";
 
-    // for (let i = 4; i < changeMultiplier.length-1; i++) {
-    //   layersChangeArr[i] += change * changeMultiplier[i];
-    //   console.log(layersChangeArr[i]);  // NOTE: to not have hardcoded each layerX change but it has a bug when using it after dying jumps back to previous position
-    //   layers[i].style.backgroundPositionX = layersChangeArr[i] + "px";
-    // }
-    layer6X += change;
-    layer5X += change * 0.5;
-    layer4X += change * 0.25;
-    layer3X += change * 0.1;
-    layer2X += change * 0.05;
-    layer1X += change * 0.01;
+    for (let i = 0; i < changeMultiplier.length; i++) {
+      layersChangeArr[i].val += change * changeMultiplier[i]; //change position for each layer
+      layers[i].style.backgroundPositionX = layersChangeArr[i].val + "px";
+    }
 
-    obstaclePos += obstacleChange
-    layers[0].style.backgroundPositionX = layer1X + "px";
-    layers[1].style.backgroundPositionX = layer2X + "px";
-    layers[2].style.backgroundPositionX = layer3X + "px";
-    layers[3].style.backgroundPositionX = layer4X + "px";
-    layers[4].style.backgroundPositionX = layer5X + "px";
-    layers[5].style.backgroundPositionX = layer6X + "px";
+    obstaclePos += obstacleChange;
     obstacle.style.left = obstaclePos + "px";
   }
   if (keys.includes("ArrowRight")) {
     player.style.transform = "scaleX(1)";
-    layer6X -= change;
-    layer5X -= change * 0.5;
-    layer4X -= change * 0.25;
-    layer3X -= change * 0.1;
-    layer2X -= change * 0.05;
-    layer1X -= change * 0.01;
 
     if (prevSpeedLvl != speedLvl) {
       obstacleChange += obstacleSpeedChange;
       prevSpeedLvl = speedLvl;
     }
 
+    for (let i = 0; i < changeMultiplier.length; i++) {
+      layersChangeArr[i].val -= change * changeMultiplier[i]; //change position for each layer
+      layers[i].style.backgroundPositionX = layersChangeArr[i].val + "px";
+    }
+
     obstaclePos -= obstacleChange;
-
-    // for (let i = 0; i < changeMultiplier.length; i++) {
-    //   layersChangeArr[i]-=change*changeMultiplier[i] // NOTE: to not have hardcoded each layerX change but it has a bug when using it after dying jumps back to previous position
-    //   layers[i].style.backgroundPositionX = layersChangeArr[i] + "px";
-    // }
-
-    layers[0].style.backgroundPositionX = layer1X + "px";
-    layers[1].style.backgroundPositionX = layer2X + "px";
-    layers[2].style.backgroundPositionX = layer3X + "px";
-    layers[3].style.backgroundPositionX = layer4X + "px";
-    layers[4].style.backgroundPositionX = layer5X + "px";
-    layers[5].style.backgroundPositionX = layer6X + "px";
     obstacle.style.left = obstaclePos + "px";
   }
 };
@@ -385,7 +320,6 @@ const checkIfDeadGif = () => {
 checkIfDeadGif();
 
 const main = () => {
-  console.log(dead);
   createObstacle();
   checkCollision(playerHitbox, obstacle);
   moveRock();
