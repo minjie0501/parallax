@@ -2,6 +2,7 @@ const layers = document.getElementsByClassName("layer");
 const player = document.getElementById("player");
 const playerHitbox = document.getElementById("player-hitbox");
 const scoreDisplay = document.getElementById("score");
+const levelDisplay = document.getElementById("level");
 const newGameDiv = document.getElementById("new-game");
 const newGameBtn = document.getElementById("btn-new-game");
 const stopText = document.getElementById("stop");
@@ -23,10 +24,13 @@ let layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
 const keys = [];
 const tic = 10;
 const change = 20;
-const obstacleChange = 10;
+let obstacleChange = 10;
 const playerHeight = 250;
 let obstacleWidth;
 let score = 0;
+let lvl = 1;
+let speedLvl = 0;
+let prevSpeedLvl = 0;
 let addScoreCheck = true;
 let playerJump = false;
 let obstacle;
@@ -34,7 +38,7 @@ let obstaclePos;
 let obstacleHitboxCss;
 let rotateDeg = -10;
 let dead = false;
-const possibleObstacleSizes = [50, 60, 70, 80, 90];
+const possibleObstacleSizes = [50, 60, 70, 80, 90, 100];
 
 function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -49,7 +53,7 @@ function resetGif(id) {
 
 const createObstacle = () => {
   if (document.getElementById("obstacle") == null) {
-    let obstacleSize = possibleObstacleSizes[Math.floor(Math.random() * 4) + 1];
+    let obstacleSize = possibleObstacleSizes[lvl > 5 ? possibleObstacleSizes.length - 1 : lvl - 1];
     const newDiv = document.createElement("div");
     const obstaclePic = document.createElement("img");
     obstaclePic.src = "img/rock1.png";
@@ -83,8 +87,14 @@ const handleScore = (elm1, elm2) => {
   let elm2Rect = elm2.getBoundingClientRect();
   if (elm1Rect.right > elm2Rect.right + playerHitboxWidth && addScoreCheck) {
     score++;
-    console.log(score);
+    if (score % 3 == 0) {
+      lvl++;
+    }
+    if (score % 6 == 0) {
+      speedLvl++;
+    }
     scoreDisplay.innerHTML = `Score: ${score}`;
+    levelDisplay.innerHTML = `Level: ${lvl}`;
     addScoreCheck = false;
   }
 };
@@ -104,21 +114,24 @@ const rotateRock = () => {
 };
 
 const stopPulse = () => {
-  if (keys.includes("ArrowLeft") && !keys.includes("ArrowRight")) {
-    if (getComputedStyle(stopText).getPropertyValue("opacity") == "0") {
-      stopText.style.opacity = 0.25;
-    } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.25") {
-      stopText.style.opacity = 0.5;
-    } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.5") {
-      stopText.style.opacity = 0.75;
-    } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.75") {
-      stopText.style.opacity = 1;
+  if(!dead){
+    if (keys.includes("ArrowLeft") && !keys.includes("ArrowRight")) {
+      if (getComputedStyle(stopText).getPropertyValue("opacity") == "0") {
+        stopText.style.opacity = 0.25;
+      } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.25") {
+        stopText.style.opacity = 0.5;
+      } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.5") {
+        stopText.style.opacity = 0.75;
+      } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.75") {
+        stopText.style.opacity = 1;
+      } else {
+        stopText.style.opacity = 0;
+      }
     } else {
       stopText.style.opacity = 0;
     }
-  } else {
-    stopText.style.opacity = 0;
   }
+
   setTimeout(stopPulse, 100);
 };
 
@@ -228,7 +241,12 @@ newGameBtn.addEventListener("click", () => {
   removeObstacle();
   dead = false;
   score = 0;
+  lvl = 1;
+  speedLvl = 0;
+  prevSpeedLvl=0;
+  obstacleChange = 10;
   scoreDisplay.innerHTML = `Score: ${score}`;
+  levelDisplay.innerHTML = `Level: ${lvl}`;
   layers[0].style.backgroundPositionX = layerOneStartingPos;
   layers[1].style.backgroundPositionX = layerTwoStartingPos;
   layers[2].style.backgroundPositionX = layerThreeStartingPos;
@@ -253,7 +271,8 @@ const moveLayer = () => {
     layer3X += change * 0.1;
     layer2X += change * 0.05;
     layer1X += change * 0.01;
-    obstaclePos += obstacleChange;
+
+    obstaclePos += obstacleChange
     layers[0].style.backgroundPositionX = layer1X + "px";
     layers[1].style.backgroundPositionX = layer2X + "px";
     layers[2].style.backgroundPositionX = layer3X + "px";
@@ -270,14 +289,23 @@ const moveLayer = () => {
     layer3X -= change * 0.1;
     layer2X -= change * 0.05;
     layer1X -= change * 0.01;
-    obstaclePos -= obstacleChange;
+
+    if(prevSpeedLvl!=speedLvl){
+      console.log('spoeed', speedLvl)
+      console.log('prevspoeed', prevSpeedLvl)
+      obstacleChange+=5;
+      prevSpeedLvl=speedLvl
+      // obstaclePos -= (obstacleChange+speedLvl); 
+    }
+
+    obstaclePos-=obstacleChange;
+    
     layers[0].style.backgroundPositionX = layer1X + "px";
     layers[1].style.backgroundPositionX = layer2X + "px";
     layers[2].style.backgroundPositionX = layer3X + "px";
     layers[3].style.backgroundPositionX = layer4X + "px";
     layers[4].style.backgroundPositionX = layer5X + "px";
     layers[5].style.backgroundPositionX = layer6X + "px";
-    console.log(layer6X);
     obstacle.style.left = obstaclePos + "px";
   }
 };
