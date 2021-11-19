@@ -6,6 +6,7 @@ const levelDisplay = document.getElementById("level");
 const newGameDiv = document.getElementById("new-game");
 const newGameBtn = document.getElementById("btn-new-game");
 const stopText = document.getElementById("stop");
+const countDown = document.getElementById("countdown");
 
 let playerBottom = parseInt(getComputedStyle(player).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxBottom = parseInt(getComputedStyle(playerHitbox).getPropertyValue("bottom").split("px")[0]);
@@ -25,6 +26,7 @@ const keys = [];
 const tic = 10;
 const change = 20;
 let obstacleChange = 10;
+const obstacleSpeedChange = 5;
 const playerHeight = 250;
 let obstacleWidth;
 let score = 0;
@@ -82,15 +84,49 @@ const removeObstacle = () => {
   }
 };
 
+////
+let initial = 5000;
+let count = initial;
+let counter; //10 will  run it every 100th of a second
+let initialMillis;
+
+function timer() {
+    if (count <= 0) {
+        clearInterval(counter);
+        return;
+    }
+    let current = Date.now();
+    
+    count = count - (current - initialMillis);
+    initialMillis = current;
+    displayCount(count);
+}
+
+function displayCount(count) {
+    let res = count / 1000;
+    if(parseFloat(res.toPrecision(count.toString().length))<0){
+      dead = true
+    }
+    document.getElementById("countdown").innerHTML = res.toFixed(2);
+
+}
+
+displayCount(initial);
+
+/////
+
+
+
+
 const handleScore = (elm1, elm2) => {
   let elm1Rect = elm1.getBoundingClientRect();
   let elm2Rect = elm2.getBoundingClientRect();
   if (elm1Rect.right > elm2Rect.right + playerHitboxWidth && addScoreCheck) {
     score++;
-    if (score % 3 == 0) {
+    if (score % 3 == 0) { //every 3 score lvl increases by 1
       lvl++;
     }
-    if (score % 6 == 0) {
+    if (score % 6 == 0) { //every second lvl obstacleSpeed increases
       speedLvl++;
     }
     scoreDisplay.innerHTML = `Score: ${score}`;
@@ -116,6 +152,11 @@ const rotateRock = () => {
 const stopPulse = () => {
   if(!dead){
     if (keys.includes("ArrowLeft") && !keys.includes("ArrowRight")) {
+      clearInterval(counter);
+      initialMillis = Date.now();
+      counter = setInterval(timer, 1);
+      countDown.style.opacity = 1;
+
       if (getComputedStyle(stopText).getPropertyValue("opacity") == "0") {
         stopText.style.opacity = 0.25;
       } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.25") {
@@ -128,7 +169,9 @@ const stopPulse = () => {
         stopText.style.opacity = 0;
       }
     } else {
+      clearInterval(counter);
       stopText.style.opacity = 0;
+      countDown.style.opacity = 0;
     }
   }
 
@@ -245,8 +288,11 @@ newGameBtn.addEventListener("click", () => {
   speedLvl = 0;
   prevSpeedLvl=0;
   obstacleChange = 10;
+  initial = 5000
+  count = initial
   scoreDisplay.innerHTML = `Score: ${score}`;
   levelDisplay.innerHTML = `Level: ${lvl}`;
+  player.style.transform = "scaleX(1)";
   layers[0].style.backgroundPositionX = layerOneStartingPos;
   layers[1].style.backgroundPositionX = layerTwoStartingPos;
   layers[2].style.backgroundPositionX = layerThreeStartingPos;
@@ -291,9 +337,7 @@ const moveLayer = () => {
     layer1X -= change * 0.01;
 
     if(prevSpeedLvl!=speedLvl){
-      console.log('spoeed', speedLvl)
-      console.log('prevspoeed', prevSpeedLvl)
-      obstacleChange+=5;
+      obstacleChange+=obstacleSpeedChange;
       prevSpeedLvl=speedLvl
       // obstaclePos -= (obstacleChange+speedLvl); 
     }
@@ -328,8 +372,8 @@ const checkIfDeadGif = () => {
 };
 checkIfDeadGif();
 
-// NOTE: gotta change rock hitbox
 const main = () => {
+  console.log(dead)
   createObstacle();
   checkCollision(playerHitbox, obstacle);
   moveRock();
@@ -345,6 +389,7 @@ const main = () => {
     setTimeout(rotateRock, tic);
     setTimeout(main, tic);
   } else {
+    countDown.style.opacity = 0;
     player.style.width = "300px";
     player.style.backgroundPositionX = "5px";
     player.style.zIndex = "2";

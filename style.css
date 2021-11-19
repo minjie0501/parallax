@@ -98,17 +98,20 @@ body {
 #new-game {
   /* border: 1px solid coral; */
   position: absolute;
-  width: 400px;
-  height: 100px;
-  bottom: 70%;
-  left: calc(50% - 200px);
+  width: 600px;
+  height: 200px;
+  bottom: 60%;
+  left: calc(50% - 300px);
   display: none;
   text-align: center;
+  font-size: 1.8rem;
 }
 
 #new-game > button {
-  width: 100px;
-  height: 50px;
+  width: 200px;
+  height: 80px;
+  font-size: 2rem;
+  margin-top: 5px;
 }
 
 #img3 {
@@ -146,4 +149,32 @@ body {
   margin: 20px;
   border-radius: 8px;
   right: 0px;
+}
+
+
+#btn{
+  position: absolute;
+  width: 700px;
+  height: 770px;
+  z-index: 3;
+}
+
+#btn > button{
+  position: relative;
+  width: 200px;
+  height: 80px;
+  font-size: 2rem;
+  margin-top: 5px;
+  z-index: 1;
+}
+
+#countdown{
+  margin-top: 10px;
+  position: absolute;
+  width: 300px;
+  text-align: center;
+  left: calc(50% - 150px);
+  font-size: 3rem;
+  top: 150px;
+  color: rgb(100, 29, 29);
 }
