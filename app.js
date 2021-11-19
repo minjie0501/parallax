@@ -17,8 +17,9 @@ const layerOneStartingPos = layers[0].style.backgroundPositionX;
 const layerTwoStartingPos = layers[1].style.backgroundPositionX;
 const layerThreeStartingPos = layers[2].style.backgroundPositionX;
 const layerFourStartingPos = layers[3].style.backgroundPositionX;
-const layerFiveStartingPos = layers[4].style.backgroundPositionX;
+const layerFiveStartingPos = parseInt(getComputedStyle(layers[4]).getPropertyValue("background-position-x").split("px")[0])
 const layerSixStartingPos = layers[5].style.backgroundPositionX;
+console.log(layerFiveStartingPos)
 let obstacleStartingPos;
 
 let layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
@@ -91,42 +92,40 @@ let counter; //10 will  run it every 100th of a second
 let initialMillis;
 
 function timer() {
-    if (count <= 0) {
-        clearInterval(counter);
-        return;
-    }
-    let current = Date.now();
-    
-    count = count - (current - initialMillis);
-    initialMillis = current;
-    displayCount(count);
+  if (count <= 0) {
+    clearInterval(counter);
+    return;
+  }
+  let current = Date.now();
+
+  count = count - (current - initialMillis);
+  initialMillis = current;
+  displayCount(count);
 }
 
 function displayCount(count) {
-    let res = count / 1000;
-    if(parseFloat(res.toPrecision(count.toString().length))<0){
-      dead = true
-    }
-    document.getElementById("countdown").innerHTML = res.toFixed(2);
-
+  let res = count / 1000;
+  if (parseFloat(res.toPrecision(count.toString().length)) < 0) {
+    dead = true;
+  }
+  document.getElementById("countdown").innerHTML = res.toFixed(2);
 }
 
 displayCount(initial);
 
 /////
 
-
-
-
 const handleScore = (elm1, elm2) => {
   let elm1Rect = elm1.getBoundingClientRect();
   let elm2Rect = elm2.getBoundingClientRect();
   if (elm1Rect.right > elm2Rect.right + playerHitboxWidth && addScoreCheck) {
     score++;
-    if (score % 3 == 0) { //every 3 score lvl increases by 1
+    if (score % 3 == 0) {
+      //every 3 score lvl increases by 1
       lvl++;
     }
-    if (score % 6 == 0) { //every second lvl obstacleSpeed increases
+    if (score % 6 == 0) {
+      //every second lvl obstacleSpeed increases
       speedLvl++;
     }
     scoreDisplay.innerHTML = `Score: ${score}`;
@@ -150,7 +149,7 @@ const rotateRock = () => {
 };
 
 const stopPulse = () => {
-  if(!dead){
+  if (!dead) {
     if (keys.includes("ArrowLeft") && !keys.includes("ArrowRight")) {
       clearInterval(counter);
       initialMillis = Date.now();
@@ -286,10 +285,10 @@ newGameBtn.addEventListener("click", () => {
   score = 0;
   lvl = 1;
   speedLvl = 0;
-  prevSpeedLvl=0;
+  prevSpeedLvl = 0;
   obstacleChange = 10;
-  initial = 5000
-  count = initial
+  initial = 5000;
+  count = initial;
   scoreDisplay.innerHTML = `Score: ${score}`;
   levelDisplay.innerHTML = `Level: ${lvl}`;
   player.style.transform = "scaleX(1)";
@@ -308,9 +307,18 @@ newGameBtn.addEventListener("click", () => {
   reset = true;
 });
 
+const changeMultiplier = [0.01, 0.05, 0.1, 0.25, 0.5, 1];
+const layersChangeArr = [layer1X, layer2X, layer3X, layer4X, layer5X, layer6X];
+
 const moveLayer = () => {
   if (keys.includes("ArrowLeft")) {
     player.style.transform = "scaleX(-1)";
+
+    // for (let i = 4; i < changeMultiplier.length-1; i++) {
+    //   layersChangeArr[i] += change * changeMultiplier[i];
+    //   console.log(layersChangeArr[i]);  // NOTE: to not have hardcoded each layerX change but it has a bug when using it after dying jumps back to previous position
+    //   layers[i].style.backgroundPositionX = layersChangeArr[i] + "px";
+    // }
     layer6X += change;
     layer5X += change * 0.5;
     layer4X += change * 0.25;
@@ -336,14 +344,18 @@ const moveLayer = () => {
     layer2X -= change * 0.05;
     layer1X -= change * 0.01;
 
-    if(prevSpeedLvl!=speedLvl){
-      obstacleChange+=obstacleSpeedChange;
-      prevSpeedLvl=speedLvl
-      // obstaclePos -= (obstacleChange+speedLvl); 
+    if (prevSpeedLvl != speedLvl) {
+      obstacleChange += obstacleSpeedChange;
+      prevSpeedLvl = speedLvl;
     }
 
-    obstaclePos-=obstacleChange;
-    
+    obstaclePos -= obstacleChange;
+
+    // for (let i = 0; i < changeMultiplier.length; i++) {
+    //   layersChangeArr[i]-=change*changeMultiplier[i] // NOTE: to not have hardcoded each layerX change but it has a bug when using it after dying jumps back to previous position
+    //   layers[i].style.backgroundPositionX = layersChangeArr[i] + "px";
+    // }
+
     layers[0].style.backgroundPositionX = layer1X + "px";
     layers[1].style.backgroundPositionX = layer2X + "px";
     layers[2].style.backgroundPositionX = layer3X + "px";
@@ -373,7 +385,7 @@ const checkIfDeadGif = () => {
 checkIfDeadGif();
 
 const main = () => {
-  console.log(dead)
+  console.log(dead);
   createObstacle();
   checkCollision(playerHitbox, obstacle);
   moveRock();
