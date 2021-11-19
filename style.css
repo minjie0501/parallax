@@ -56,28 +56,30 @@ body {
 }
 
 #player-hitbox {
-  /* border: 1px solid coral; */
+  border: 1px solid coral;
   background-size: 18rem;
   background-position-x: 40px;
   position: absolute;
   width: 55px;
   height: 150px;
-  bottom: 65px;
+  bottom: 70px;
   left: calc(50% - 2px);
   z-index: 3;
 }
 
 .obstacle {
-  /* border: 1px solid coral; */
-  background-image: url("img/rock1.png");
-  background-size: 50px;
+  border: 1px solid coral;
   position: absolute;
   width: 50px;
   height: 50px;
   bottom: 50px;
   left: 1760px;
+}
 
-  /* border-radius: 50%; */
+.obstacle > img {
+  position: relative;
+  left: -16%;
+  bottom: 16%;
 }
 
 #score {
@@ -122,4 +124,13 @@ body {
 
 #btn-new-game:hover {
   background: rgb(241, 209, 198);
+}
+
+#stop{
+  border: 1px solid red;
+  position: absolute;
+  font-size:5rem;
+  color: red;
+  left: calc(50% - 460px);
+  top: 50px;
 }

@@ -4,15 +4,12 @@ const playerHitbox = document.getElementById("player-hitbox");
 const scoreDisplay = document.getElementById("score");
 const newGameDiv = document.getElementById("new-game");
 const newGameBtn = document.getElementById("btn-new-game");
-// const obstacle = document.getElementById("obstacle");
+const stopText = document.getElementById("stop");
 
 let playerBottom = parseInt(getComputedStyle(player).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxBottom = parseInt(getComputedStyle(playerHitbox).getPropertyValue("bottom").split("px")[0]);
 let playerHitboxWidth = parseInt(getComputedStyle(playerHitbox).getPropertyValue("width").split("px")[0]);
-// let obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
-
 const playerHitboxCss = getComputedStyle(playerHitbox);
-// const obstacleHitboxCss = getComputedStyle(obstacle);
 ////Default values
 const layerOneStartingPos = layers[0].style.backgroundPositionX;
 const layerTwoStartingPos = layers[1].style.backgroundPositionX;
@@ -21,7 +18,6 @@ const layerFourStartingPos = layers[3].style.backgroundPositionX;
 const layerFiveStartingPos = layers[4].style.backgroundPositionX;
 const layerSixStartingPos = layers[5].style.backgroundPositionX;
 let obstacleStartingPos;
-
 
 let layer1X = (layer2X = layer3X = layer4X = layer5X = layer6X = 0);
 const keys = [];
@@ -38,7 +34,7 @@ let obstaclePos;
 let obstacleHitboxCss;
 let rotateDeg = -10;
 let dead = false;
-const possibleObstacleSizes = [50, 60, 70, 80,  90];
+const possibleObstacleSizes = [50, 60, 70, 80, 90];
 
 function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -55,13 +51,18 @@ const createObstacle = () => {
   if (document.getElementById("obstacle") == null) {
     let obstacleSize = possibleObstacleSizes[Math.floor(Math.random() * 4) + 1];
     const newDiv = document.createElement("div");
+    const obstaclePic = document.createElement("img");
+    obstaclePic.src = "img/rock1.png";
+    obstaclePic.style.width = `${obstacleSize + 30}px`;
+    obstaclePic.style.height = `${obstacleSize + 30}px`;
     newDiv.setAttribute("id", "obstacle");
     newDiv.classList.add("obstacle");
+    newDiv.appendChild(obstaclePic);
+
     insertAfter(playerHitbox, newDiv);
     obstacle = document.getElementById("obstacle");
     obstacle.style.width = `${obstacleSize}px`;
     obstacle.style.height = `${obstacleSize}px`;
-    obstacle.style.backgroundSize = `${obstacleSize}px`;
     obstaclePos = parseInt(getComputedStyle(obstacle).getPropertyValue("left").split("px")[0]);
     obstacleHitboxCss = getComputedStyle(obstacle);
     addScoreCheck = true;
@@ -102,6 +103,27 @@ const rotateRock = () => {
   rotateDeg -= 10;
 };
 
+const stopPulse = () => {
+  if (keys.includes("ArrowLeft") && !keys.includes("ArrowRight")) {
+    if (getComputedStyle(stopText).getPropertyValue("opacity") == "0") {
+      stopText.style.opacity = 0.25;
+    } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.25") {
+      stopText.style.opacity = 0.5;
+    } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.5") {
+      stopText.style.opacity = 0.75;
+    } else if (getComputedStyle(stopText).getPropertyValue("opacity") == "0.75") {
+      stopText.style.opacity = 1;
+    } else {
+      stopText.style.opacity = 0;
+    }
+  } else {
+    stopText.style.opacity = 0;
+  }
+  setTimeout(stopPulse, 100);
+};
+
+stopPulse();
+
 const checkCollision = (elm1, elm2) => {
   let elm1Rect = elm1.getBoundingClientRect();
   let elm2Rect = elm2.getBoundingClientRect();
@@ -117,10 +139,7 @@ const checkCollision = (elm1, elm2) => {
 };
 
 const changeRun = () => {
-  if (
-    (keys.includes("ArrowLeft") || keys.includes("ArrowRight")) &&
-    !(keys.includes("ArrowLeft") && keys.includes("ArrowRight"))
-  ) {
+  if ((keys.includes("ArrowLeft") || keys.includes("ArrowRight")) && !(keys.includes("ArrowLeft") && keys.includes("ArrowRight"))) {
     player.style.backgroundImage = "url('img/run.gif')";
   } else {
     player.style.backgroundImage = "url('img/idle.gif')";
@@ -258,7 +277,14 @@ const moveLayer = () => {
     layers[3].style.backgroundPositionX = layer4X + "px";
     layers[4].style.backgroundPositionX = layer5X + "px";
     layers[5].style.backgroundPositionX = layer6X + "px";
-    console.log(layer6X)
+    console.log(layer6X);
+    obstacle.style.left = obstaclePos + "px";
+  }
+};
+
+const moveRock = () => {
+  if (keys.length == 0 && !dead) {
+    obstaclePos -= obstacleChange - 5;
     obstacle.style.left = obstaclePos + "px";
   }
 };
@@ -274,13 +300,11 @@ const checkIfDeadGif = () => {
 };
 checkIfDeadGif();
 
-
-
 // NOTE: gotta change rock hitbox
 const main = () => {
   createObstacle();
   checkCollision(playerHitbox, obstacle);
-  console.log('asd')
+  moveRock();
   if (!dead) {
     changeRun();
     moveLayer();
@@ -300,9 +324,6 @@ const main = () => {
     newGame();
     setTimeout(main, tic);
   }
-  // console.log(keys);
-  // console.log("obstacle left: "  + getComputedStyle(obstacle).getPropertyValue("left"))
-  // console.log("player right: "  + getComputedStyle(playerHitbox).getPropertyValue("right"))
 };
 
 main();
