@@ -78,7 +78,7 @@ const removeObstacle = () => {
   }
 };
 
-////
+//// 
 let initial = 5000;
 let count = initial;
 let counter; //10 will  run it every 100th of a second
@@ -302,7 +302,7 @@ const moveLayer = () => {
 };
 
 const moveRock = () => {
-  if (keys.length == 0 && !dead) {
+  if (keys.length == 0 && !dead || (keys.includes(' ') && (!keys.includes('ArrowRight') && !keys.includes('ArrowLeft') ))) {
     obstaclePos -= obstacleChange - 5;
     obstacle.style.left = obstaclePos + "px";
   }
@@ -320,6 +320,7 @@ const checkIfDeadGif = () => {
 checkIfDeadGif();
 
 const main = () => {
+  console.log(keys);
   createObstacle();
   checkCollision(playerHitbox, obstacle);
   moveRock();
