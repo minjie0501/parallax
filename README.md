@@ -9,7 +9,7 @@
 
 ### Platform game -> https://minjie0501.github.io/parallax/
 
-- Run to the right and job over the obstacles
+- Run to the right and jump over the obstacles
 - You are allowed to run to the left for a total of 5 seconds
 
 ![image](https://user-images.githubusercontent.com/71938071/142771280-fc5c8f54-9ed0-4b42-b0c0-ec1cc61d51c7.png)
